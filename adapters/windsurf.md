@@ -20,13 +20,16 @@
 
 ## File Structure
 
-```
-your-project/
-├── .windsurf/
-│   └── rules/
-│       └── memshare.md    # memShare integration rule
-├── src/
-└── ...
+```mermaid
+graph LR
+    subgraph your-project/
+        subgraph .windsurf/
+            subgraph rules/
+                F["memshare.md"]
+            end
+        end
+        S["src/"]
+    end
 ```
 
 ## Windsurf-Specific Notes

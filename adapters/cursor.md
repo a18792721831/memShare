@@ -26,13 +26,16 @@
 
 ## File Structure
 
-```
-your-project/
-├── .cursor/
-│   └── rules/
-│       └── memshare.mdc    # memShare integration rule
-├── src/
-└── ...
+```mermaid
+graph LR
+    subgraph your-project/
+        subgraph .cursor/
+            subgraph rules/
+                F["memshare.mdc"]
+            end
+        end
+        S["src/"]
+    end
 ```
 
 ## Tips

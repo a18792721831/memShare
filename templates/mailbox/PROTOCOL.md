@@ -7,14 +7,18 @@
 
 ## Directory Structure
 
-```
-mailbox/
-├── PROTOCOL.md          # This file
-├── to-agent-a/          # Inbox for Agent A
-│   ├── 20260305_143000_agent-b.md
-│   └── 20260305_150000_agent-c.md
-└── to-agent-b/          # Inbox for Agent B
-    └── 20260305_144500_agent-a.md
+```mermaid
+graph LR
+    subgraph mailbox
+        P["PROTOCOL.md"]
+        subgraph to-agent-a/
+            FA1["20260305_143000_agent-b.md"]
+            FA2["20260305_150000_agent-c.md"]
+        end
+        subgraph to-agent-b/
+            FB1["20260305_144500_agent-a.md"]
+        end
+    end
 ```
 
 ## Message Format

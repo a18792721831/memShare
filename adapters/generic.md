@@ -55,21 +55,28 @@ Your AI tool must support at least one of:
 
 Default data directory: `~/memshare-data`
 
-```
-~/memshare-data/
-├── MEMORY.md              # Long-term consolidated memory
-├── SOUL.md                # Behavioral guidelines
-├── USER.md                # User preferences
-├── IDENTITY.md            # Agent identity
-├── daily-memories/        # Daily session records
-│   ├── 2026-03-05.md
-│   └── ...
-├── .learnings/            # Error & learning tracking
-│   ├── ERRORS.md
-│   ├── LEARNINGS.md
-│   └── PROMOTIONS.md
-└── mailbox/               # Cross-agent messaging
-    ├── PROTOCOL.md
-    ├── to-agent-a/
-    └── to-agent-b/
+```mermaid
+graph LR
+    subgraph memshare-data["~/memshare-data/"]
+        M1["MEMORY.md<br/><i>Long-term memory</i>"]
+        M2["SOUL.md<br/><i>Guidelines</i>"]
+        M3["USER.md<br/><i>Preferences</i>"]
+        M4["IDENTITY.md<br/><i>Agent identity</i>"]
+
+        subgraph daily-memories/
+            D1["2026-03-05.md"]
+        end
+
+        subgraph .learnings/
+            L1["ERRORS.md"]
+            L2["LEARNINGS.md"]
+            L3["PROMOTIONS.md"]
+        end
+
+        subgraph mailbox/
+            P["PROTOCOL.md"]
+            A["to-agent-a/"]
+            B["to-agent-b/"]
+        end
+    end
 ```

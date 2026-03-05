@@ -28,29 +28,37 @@ memShare provides a structured memory layer that any AI agent can read and write
 
 ### Architecture
 
-```
-┌─────────────────────────────────────────────┐
-│              Your AI Agents                  │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐    │
-│  │ CodeBuddy│ │  Cursor  │ │  Claude  │    │
-│  │  Agent   │ │  Agent   │ │ Desktop  │    │
-│  └────┬─────┘ └────┬─────┘ └────┬─────┘    │
-│       │             │            │           │
-│  ┌────▼─────────────▼────────────▼─────┐    │
-│  │         memShare Data Layer          │    │
-│  │  ┌──────────┐ ┌──────────────────┐  │    │
-│  │  │ Memories │ │    Learnings     │  │    │
-│  │  │ MEMORY   │ │  ERRORS.md       │  │    │
-│  │  │ daily/   │ │  LEARNINGS.md    │  │    │
-│  │  │ USER     │ │  PROMOTIONS.md   │  │    │
-│  │  │ SOUL     │ │                  │  │    │
-│  │  └──────────┘ └──────────────────┘  │    │
-│  │  ┌──────────┐ ┌──────────────────┐  │    │
-│  │  │ Mailbox  │ │  Storage Backend │  │    │
-│  │  │ to-xxx/  │ │  Local/COS/S3   │  │    │
-│  │  └──────────┘ └──────────────────┘  │    │
-│  └─────────────────────────────────────┘    │
-└─────────────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph Agents["Your AI Agents"]
+        A1[CodeBuddy Agent]
+        A2[Cursor Agent]
+        A3[Claude Desktop]
+    end
+
+    subgraph DataLayer["memShare Data Layer"]
+        subgraph Memories
+            M1[MEMORY.md]
+            M2["daily-memories/"]
+            M3[USER.md]
+            M4[SOUL.md]
+        end
+        subgraph Learnings
+            L1[ERRORS.md]
+            L2[LEARNINGS.md]
+            L3[PROMOTIONS.md]
+        end
+        subgraph Mailbox
+            MB["to-xxx/"]
+        end
+        subgraph Storage["Storage Backend"]
+            S["Local / COS / S3"]
+        end
+    end
+
+    A1 --> DataLayer
+    A2 --> DataLayer
+    A3 --> DataLayer
 ```
 
 ## Quick Start
@@ -115,12 +123,16 @@ memShare tracks errors and learnings automatically:
 
 Multiple AI agents can communicate asynchronously via the mailbox:
 
-```
-mailbox/
-├── to-codebuddy/     # CodeBuddy's inbox
-│   └── 20260305_143000_claude.md
-└── to-claude/        # Claude's inbox
-    └── 20260305_150000_codebuddy.md
+```mermaid
+graph LR
+    subgraph mailbox
+        subgraph to-codebuddy["to-codebuddy/"]
+            F1["20260305_143000_claude.md"]
+        end
+        subgraph to-claude["to-claude/"]
+            F2["20260305_150000_codebuddy.md"]
+        end
+    end
 ```
 
 See [templates/mailbox/PROTOCOL.md](templates/mailbox/PROTOCOL.md) for the messaging protocol.
@@ -177,30 +189,35 @@ Available tools:
 
 ## Project Structure
 
-```
-memShare/
-├── setup.py                 # Interactive setup wizard
-├── mcp_server.py            # MCP server for Claude Desktop etc.
-├── requirements.txt         # Python dependencies
-├── scripts/
-│   ├── storage_backend.py   # Storage abstraction (Local/COS/S3)
-│   ├── sync.py              # Sync tool (push/pull)
-│   └── memory_consolidator.py # Daily → long-term consolidation
-├── templates/               # Template files (copied during setup)
-│   ├── MEMORY.md
-│   ├── SOUL.md
-│   ├── USER.md
-│   ├── IDENTITY.md
-│   ├── daily-memories/
-│   ├── .learnings/
-│   └── mailbox/
-├── adapters/                # AI tool integration guides
-│   ├── codebuddy.md
-│   ├── cursor.md
-│   ├── windsurf.md
-│   ├── claude-desktop.md
-│   └── generic.md
-└── examples/                # Example configurations
+```mermaid
+graph LR
+    subgraph memShare
+        A["setup.py<br/><i>Interactive setup wizard</i>"]
+        B["mcp_server.py<br/><i>MCP server</i>"]
+        C["requirements.txt"]
+
+        subgraph scripts/
+            S1["storage_backend.py"]
+            S2["sync.py"]
+            S3["memory_consolidator.py"]
+        end
+
+        subgraph templates/
+            T1["MEMORY.md / SOUL.md / USER.md"]
+            T2["daily-memories/"]
+            T3[".learnings/"]
+            T4["mailbox/"]
+        end
+
+        subgraph adapters/
+            D1["codebuddy.md"]
+            D2["cursor.md / windsurf.md"]
+            D3["claude-desktop.md"]
+            D4["generic.md"]
+        end
+
+        E["examples/"]
+    end
 ```
 
 ## Contributing
