@@ -1,0 +1,9 @@
+# Core (no dependencies for local storage)
+# python-dotenv is optional but recommended
+python-dotenv>=1.0.0
+
+# Optional: Tencent Cloud COS (install if using COS backend)
+# cos-python-sdk-v5>=1.9.0
+
+# Optional: AWS S3 (install if using S3 backend)
+# boto3>=1.28.0
