@@ -1,0 +1,14 @@
+{
+  "agents": {
+    "my-agent": {
+      "name": "My Agent",
+      "type": "coding-assistant",
+      "platform": "CodeBuddy",
+      "capabilities": ["code", "file-system", "git"],
+      "mailbox": "to-my-agent",
+      "registered_at": "",
+      "status": "active"
+    }
+  },
+  "version": 1
+}

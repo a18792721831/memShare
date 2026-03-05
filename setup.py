@@ -12,8 +12,10 @@ Usage:
 
 import os
 import sys
+import json
 import shutil
 from pathlib import Path
+from datetime import datetime
 
 
 # ANSI colors
@@ -160,8 +162,54 @@ def setup_interactive():
     if identity_file.exists():
         content = identity_file.read_text()
         content = content.replace("my-agent", agent_name)
+        content = content.replace("My Agent", agent_name)
         identity_file.write_text(content)
         print(f"  ✓ Updated IDENTITY.md with agent name: {agent_name}")
+
+    # Register agent in agents.json
+    agents_file = data_path / "mailbox" / "agents.json"
+    agents_data = {"agents": {}, "version": 1}
+    if agents_file.exists():
+        try:
+            agents_data = json.loads(agents_file.read_text())
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    # Determine capabilities based on tool choice
+    tool_lower = tool.lower()
+    if "codebuddy" in tool_lower:
+        capabilities = ["code", "file-system", "git", "mcp", "web-search"]
+        platform = "CodeBuddy (Tencent)"
+        agent_type = "coding-assistant"
+    elif "cursor" in tool_lower:
+        capabilities = ["code", "file-system", "git", "web-search"]
+        platform = "Cursor"
+        agent_type = "coding-assistant"
+    elif "windsurf" in tool_lower:
+        capabilities = ["code", "file-system", "git"]
+        platform = "Windsurf (Codeium)"
+        agent_type = "coding-assistant"
+    elif "claude" in tool_lower:
+        capabilities = ["code", "file-system", "mcp"]
+        platform = "Claude Desktop"
+        agent_type = "general-assistant"
+    else:
+        capabilities = ["code", "file-system"]
+        platform = "Other"
+        agent_type = "assistant"
+
+    agents_data["agents"][agent_name] = {
+        "name": agent_name,
+        "type": agent_type,
+        "platform": platform,
+        "capabilities": capabilities,
+        "mailbox": f"to-{agent_name}",
+        "registered_at": datetime.now().isoformat(),
+        "status": "active",
+    }
+    agents_file.parent.mkdir(parents=True, exist_ok=True)
+    agents_file.write_text(json.dumps(agents_data, indent=2, ensure_ascii=False) + "\n")
+    print(f"  ✓ Registered agent '{agent_name}' in agents.json")
 
     # Write .env file
     env_file = Path(__file__).parent / ".env"

@@ -60,7 +60,7 @@ Default data directory: `~/memshare-data`
 ├── MEMORY.md              # Long-term consolidated memory
 ├── SOUL.md                # Behavioral guidelines
 ├── USER.md                # User preferences
-├── IDENTITY.md            # Agent identity
+├── IDENTITY.md            # Agent identity (with unique agent-id)
 ├── daily-memories/        # Daily session records
 │   ├── 2026-03-05.md
 │   └── ...
@@ -70,6 +70,9 @@ Default data directory: `~/memshare-data`
 │   └── PROMOTIONS.md
 └── mailbox/               # Cross-agent messaging
     ├── PROTOCOL.md
-    ├── to-agent-a/
+    ├── agents.json        # Agent registry (all registered agents)
+    ├── to-agent-a/        # Inbox (scan only root, not archive/)
+    │   ├── *.md           # Active messages
+    │   └── archive/       # Processed messages (status=done)
     └── to-agent-b/
 ```
