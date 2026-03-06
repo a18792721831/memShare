@@ -193,6 +193,9 @@ class FlyPigeonChannel(NotifyChannel):
         return "pigeon"
 
     def send(self, title: str, body: str, messages: list[MailMessage]) -> bool:
+        if not self.api_url:
+            logger.warning("FlyPigeon: PIGEON_API_URL not configured, skipping")
+            return False
         if not self.send_to:
             logger.warning("FlyPigeon: PIGEON_SEND_TO not configured, skipping")
             return False
@@ -264,12 +267,12 @@ class OpenClawWeComChannel(NotifyChannel):
 
     Config (env or config file):
         OPENCLAW_MAILBOX_DIR  Path to OpenClaw mailbox (auto-detected from data_dir)
-        OPENCLAW_NOTIFY_TO    RTX name of the user to notify (default: yongqijia)
+        OPENCLAW_NOTIFY_TO    RTX name of the user to notify (required, no default)
     """
 
     def __init__(self, data_dir: Path = None):
         self._data_dir = data_dir
-        self.notify_to = os.environ.get("OPENCLAW_NOTIFY_TO", "yongqijia")
+        self.notify_to = os.environ.get("OPENCLAW_NOTIFY_TO", "")
 
     def _get_mailbox_dir(self) -> Path:
         """Resolve OpenClaw's mailbox directory."""
@@ -287,6 +290,9 @@ class OpenClawWeComChannel(NotifyChannel):
         return "openclaw_wecom"
 
     def send(self, title: str, body: str, messages: list[MailMessage]) -> bool:
+        if not self.notify_to:
+            logger.warning("OpenClawWecom: OPENCLAW_NOTIFY_TO not configured, skipping")
+            return False
         mailbox = self._get_mailbox_dir()
         mailbox.mkdir(parents=True, exist_ok=True)
 

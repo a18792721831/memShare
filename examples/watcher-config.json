@@ -10,12 +10,12 @@
 
   "openclaw_wecom": {
     "_comment": "WeChat Work notification via OpenClaw relay. Watcher writes a request message to OpenClaw's mailbox, and OpenClaw forwards it to the user via its built-in WeChat Work app.",
-    "notify_to": "yongqijia"
+    "notify_to": "your-rtx-name"
   },
 
   "pigeon": {
     "_comment": "[DEPRECATED] Fly Pigeon (WeChat Work) notification. Use openclaw_wecom instead.",
-    "api_url": "http://dev.ngate.tencent-cloud.com/pigeon/v1/wecom/notify",
+    "api_url": "",
     "send_to": ["your-rtx-name"],
     "send_from": "memShare"
   }
