@@ -4,9 +4,16 @@
 # Memory consolidation + learning promotion (daily at 23:00)
 0 23 * * * cd ~/memshare-data && python3 /path/to/memShare/scripts/memory_consolidator.py all >> /tmp/memshare-consolidator.log 2>&1
 
-# Cloud sync - push local changes (every 5 minutes)
+# Cloud sync - bidirectional (pull then push, every 5 minutes)
 # Uncomment if using cloud storage (COS/S3)
-# */5 * * * * cd /path/to/memShare && python3 scripts/sync.py push >> /tmp/memshare-sync.log 2>&1
+# */5 * * * * cd /path/to/memShare && python3 scripts/sync.py sync >> /tmp/memshare-sync.log 2>&1
 
-# Cloud sync - pull remote changes (every 5 minutes)
+# Cloud sync - pull only (if you only want to receive, not push)
 # */5 * * * * cd /path/to/memShare && python3 scripts/sync.py pull >> /tmp/memshare-sync.log 2>&1
+
+# Mailbox watcher - check for new messages (every minute, oneshot mode)
+# Use this instead of daemon mode if you prefer crontab
+* * * * * cd /path/to/memShare && python3 scripts/mailbox_watcher.py oneshot --channels log,pigeon >> /tmp/memshare-watcher.log 2>&1
+
+# Watcher state cleanup (weekly on Sunday at 00:00)
+0 0 * * 0 cd /path/to/memShare && python3 scripts/mailbox_watcher.py cleanup >> /tmp/memshare-watcher.log 2>&1

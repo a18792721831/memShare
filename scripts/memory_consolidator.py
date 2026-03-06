@@ -307,6 +307,13 @@ def cleanup(data_dir: Path, archive_after_days: int = 90):
     # Also clean up mailbox
     archive_mailbox(data_dir)
 
+    # Clean up watcher state
+    try:
+        from mailbox_watcher import cleanup_state
+        cleanup_state(data_dir)
+    except ImportError:
+        pass
+
 
 def _extract_section(content: str, section_name: str) -> str:
     """Extract a ## section from markdown content."""

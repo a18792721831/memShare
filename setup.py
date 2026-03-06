@@ -237,11 +237,20 @@ def setup_interactive():
     if backend != "local":
         print(f"  2. Set up automatic sync (crontab):")
         script_path = Path(__file__).parent / "scripts"
-        print(f"     * * * * * cd {data_dir} && python3 {script_path}/sync.py pull")
-        print(f"     */5 * * * * cd {data_dir} && python3 {script_path}/sync.py push")
+        print(f"     */5 * * * * cd {data_dir} && python3 {script_path}/sync.py sync")
 
-    print(f"  {'3' if backend != 'local' else '2'}. Schedule daily memory consolidation:")
+    step = 3 if backend != "local" else 2
+    print(f"  {step}. Schedule daily memory consolidation:")
     print(f"     0 23 * * * python3 {Path(__file__).parent}/scripts/memory_consolidator.py all")
+
+    step += 1
+    print(f"  {step}. (Optional) Set up mailbox watcher for auto-notifications:")
+    print(f"     Option A - Daemon (recommended):")
+    print(f"       python3 {Path(__file__).parent}/scripts/mailbox_watcher.py daemon")
+    print(f"     Option B - Crontab:")
+    print(f"       * * * * * python3 {Path(__file__).parent}/scripts/mailbox_watcher.py oneshot")
+    print(f"     Option C - macOS launchd:")
+    print(f"       See examples/com.memshare.watcher.plist")
 
     print(f"\n  {C.CYAN}Data directory: {data_dir}{C.END}")
     print(f"  {C.CYAN}Agent name: {agent_name}{C.END}")
