@@ -157,6 +157,7 @@ def promote(data_dir: Path):
             continue
 
         content = filepath.read_text(encoding="utf-8")
+        file_promoted = 0
 
         # Find entries with Recurrence-Count >= 3 and status: active
         pattern = r"(### (?:LRN|ERR)-\d{4}-\d{2}-\d{2}-\d+\n.*?(?=### (?:LRN|ERR)-|\Z))"
@@ -202,13 +203,14 @@ def promote(data_dir: Path):
                         f"**Status**: promoted",
                     )
                     content = content.replace(entry, new_entry)
-                    promoted_count += 1
+                    file_promoted += 1
 
                     logger.info(f"Promoted: {pattern_key} (count={count})")
 
-        # Write back modified content
-        if promoted_count > 0:
+        # Write back modified content only if this file had promotions
+        if file_promoted > 0:
             filepath.write_text(content, encoding="utf-8")
+        promoted_count += file_promoted
 
     logger.info(f"Promotion complete: {promoted_count} entries promoted")
 

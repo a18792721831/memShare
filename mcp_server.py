@@ -15,6 +15,7 @@ Environment:
 """
 
 import os
+import re
 import sys
 import json
 import logging
@@ -57,7 +58,6 @@ def write_daily_memory(title: str, project: str, task: str,
     session_num = 1
     if daily_file.exists():
         content = daily_file.read_text(encoding="utf-8")
-        import re
         sessions = re.findall(r"### Session (\d+)", content)
         if sessions:
             session_num = max(int(s) for s in sessions) + 1
@@ -105,13 +105,12 @@ def read_learnings(status: str = "active") -> str:
 
         content = filepath.read_text(encoding="utf-8")
         # Filter by status
-        import re
         entries = re.findall(
             r"(### (?:LRN|ERR)-\d{4}-\d{2}-\d{2}-\d+\n.*?(?=### (?:LRN|ERR)-|\Z))",
             content, re.DOTALL
         )
         for entry in entries:
-            if f"**Status**: {status}" in entry:
+            if status == "all" or f"**Status**: {status}" in entry:
                 result.append(f"[{filename}]\n{entry.strip()}")
 
     return "\n\n".join(result) if result else f"No {status} learnings found."
@@ -138,7 +137,6 @@ def write_learning(pattern_key: str, category: str, area: str,
     # Check for duplicate
     if f"**Pattern-Key**: {pattern_key}" in content:
         # Increment recurrence count
-        import re
         pattern = (
             rf"(\*\*Pattern-Key\*\*: {re.escape(pattern_key)}.*?"
             rf"\*\*Recurrence-Count\*\*: )(\d+)"
@@ -154,7 +152,6 @@ def write_learning(pattern_key: str, category: str, area: str,
     # Create new entry
     today = date.today().isoformat()
     # Count existing entries for numbering
-    import re
     existing = re.findall(rf"{prefix}-{today}-(\d+)", content)
     num = max((int(n) for n in existing), default=0) + 1
 
@@ -299,7 +296,7 @@ TOOLS = {
             "properties": {
                 "status": {
                     "type": "string",
-                    "description": "Filter by status: active, promoted",
+                    "description": "Filter by status: active, promoted, or all",
                     "default": "active",
                 }
             },
@@ -421,6 +418,7 @@ def handle_request(request: dict) -> dict:
                 },
             }
         except Exception as e:
+            logger.exception(f"Tool '{tool_name}' failed: {e}")
             return {
                 "jsonrpc": "2.0",
                 "id": req_id,

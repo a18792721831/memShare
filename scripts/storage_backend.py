@@ -28,6 +28,15 @@ logger = logging.getLogger("memshare.storage")
 class StorageBackend(ABC):
     """Abstract storage backend interface."""
 
+    @staticmethod
+    def _md5(filepath: Path) -> str:
+        """Calculate MD5 hash of a file."""
+        h = hashlib.md5()
+        with open(filepath, "rb") as f:
+            for chunk in iter(lambda: f.read(8192), b""):
+                h.update(chunk)
+        return h.hexdigest()
+
     @abstractmethod
     def push(self, local_dir: str, remote_prefix: str, exclude: list = None) -> dict:
         """
@@ -158,14 +167,6 @@ class LocalStorage(StorageBackend):
             target.unlink()
             return True
         return False
-
-    @staticmethod
-    def _md5(filepath: Path) -> str:
-        h = hashlib.md5()
-        with open(filepath, "rb") as f:
-            for chunk in iter(lambda: f.read(8192), b""):
-                h.update(chunk)
-        return h.hexdigest()
 
 
 class COSStorage(StorageBackend):
@@ -302,14 +303,6 @@ class COSStorage(StorageBackend):
         except Exception:
             return False
 
-    @staticmethod
-    def _md5(filepath: Path) -> str:
-        h = hashlib.md5()
-        with open(filepath, "rb") as f:
-            for chunk in iter(lambda: f.read(8192), b""):
-                h.update(chunk)
-        return h.hexdigest()
-
 
 class S3Storage(StorageBackend):
     """
@@ -428,14 +421,6 @@ class S3Storage(StorageBackend):
             return True
         except Exception:
             return False
-
-    @staticmethod
-    def _md5(filepath: Path) -> str:
-        h = hashlib.md5()
-        with open(filepath, "rb") as f:
-            for chunk in iter(lambda: f.read(8192), b""):
-                h.update(chunk)
-        return h.hexdigest()
 
 
 def create_backend(backend_type: str = None, **kwargs) -> StorageBackend:

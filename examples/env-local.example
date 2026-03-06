@@ -1,0 +1,11 @@
+# memShare - Local Storage Configuration
+# Copy this file to your memShare data directory as .env
+
+# Data directory (where all memory files are stored)
+MEMSHARE_DATA_DIR=~/memshare-data
+
+# Agent identity name (used in session records and mailbox)
+AGENT_NAME=my-agent
+
+# Storage backend: local (default), cos, or s3
+MEMSHARE_STORAGE=local

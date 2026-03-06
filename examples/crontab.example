@@ -1,0 +1,12 @@
+# memShare Crontab Configuration
+# Add these entries with: crontab -e
+
+# Memory consolidation + learning promotion (daily at 23:00)
+0 23 * * * cd ~/memshare-data && python3 /path/to/memShare/scripts/memory_consolidator.py all >> /tmp/memshare-consolidator.log 2>&1
+
+# Cloud sync - push local changes (every 5 minutes)
+# Uncomment if using cloud storage (COS/S3)
+# */5 * * * * cd /path/to/memShare && python3 scripts/sync.py push >> /tmp/memshare-sync.log 2>&1
+
+# Cloud sync - pull remote changes (every 5 minutes)
+# */5 * * * * cd /path/to/memShare && python3 scripts/sync.py pull >> /tmp/memshare-sync.log 2>&1

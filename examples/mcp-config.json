@@ -1,0 +1,42 @@
+{
+  "_comment": "Example MCP configuration for memShare. Copy the relevant section to your AI tool's config.",
+
+  "claude-desktop": {
+    "mcpServers": {
+      "memshare": {
+        "command": "python3",
+        "args": ["/path/to/memShare/mcp_server.py"],
+        "env": {
+          "MEMSHARE_DATA_DIR": "~/memshare-data",
+          "AGENT_NAME": "claude"
+        }
+      }
+    }
+  },
+
+  "cursor": {
+    "mcpServers": {
+      "memshare": {
+        "command": "python3",
+        "args": ["/path/to/memShare/mcp_server.py"],
+        "env": {
+          "MEMSHARE_DATA_DIR": "~/memshare-data",
+          "AGENT_NAME": "cursor"
+        }
+      }
+    }
+  },
+
+  "codebuddy": {
+    "mcpServers": {
+      "memshare": {
+        "command": "python3",
+        "args": ["/path/to/memShare/mcp_server.py"],
+        "env": {
+          "MEMSHARE_DATA_DIR": "~/memshare-data",
+          "AGENT_NAME": "codebuddy"
+        }
+      }
+    }
+  }
+}
