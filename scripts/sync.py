@@ -6,6 +6,7 @@ Syncs memory data between local storage and remote backend.
 Supports: Local copy, Tencent COS, AWS S3
 
 Usage:
+    python sync.py sync              # Bidirectional sync (pull then push)
     python sync.py push              # Push local → remote
     python sync.py pull              # Pull remote → local
     python sync.py status            # Show sync status
@@ -147,6 +148,7 @@ def main():
 
     cmd = sys.argv[1].lower()
     commands = {
+        "sync": cmd_sync,
         "push": cmd_push,
         "pull": cmd_pull,
         "status": cmd_status,

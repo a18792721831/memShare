@@ -12,8 +12,10 @@ Usage:
 
 import os
 import sys
+import json
 import shutil
 from pathlib import Path
+from datetime import datetime
 
 
 # ANSI colors
@@ -160,8 +162,54 @@ def setup_interactive():
     if identity_file.exists():
         content = identity_file.read_text()
         content = content.replace("my-agent", agent_name)
+        content = content.replace("My Agent", agent_name)
         identity_file.write_text(content)
         print(f"  ✓ Updated IDENTITY.md with agent name: {agent_name}")
+
+    # Register agent in agents.json
+    agents_file = data_path / "mailbox" / "agents.json"
+    agents_data = {"agents": {}, "version": 1}
+    if agents_file.exists():
+        try:
+            agents_data = json.loads(agents_file.read_text())
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    # Determine capabilities based on tool choice
+    tool_lower = tool.lower()
+    if "codebuddy" in tool_lower:
+        capabilities = ["code", "file-system", "git", "mcp", "web-search"]
+        platform = "CodeBuddy (Tencent)"
+        agent_type = "coding-assistant"
+    elif "cursor" in tool_lower:
+        capabilities = ["code", "file-system", "git", "web-search"]
+        platform = "Cursor"
+        agent_type = "coding-assistant"
+    elif "windsurf" in tool_lower:
+        capabilities = ["code", "file-system", "git"]
+        platform = "Windsurf (Codeium)"
+        agent_type = "coding-assistant"
+    elif "claude" in tool_lower:
+        capabilities = ["code", "file-system", "mcp"]
+        platform = "Claude Desktop"
+        agent_type = "general-assistant"
+    else:
+        capabilities = ["code", "file-system"]
+        platform = "Other"
+        agent_type = "assistant"
+
+    agents_data["agents"][agent_name] = {
+        "name": agent_name,
+        "type": agent_type,
+        "platform": platform,
+        "capabilities": capabilities,
+        "mailbox": f"to-{agent_name}",
+        "registered_at": datetime.now().isoformat(),
+        "status": "active",
+    }
+    agents_file.parent.mkdir(parents=True, exist_ok=True)
+    agents_file.write_text(json.dumps(agents_data, indent=2, ensure_ascii=False) + "\n")
+    print(f"  ✓ Registered agent '{agent_name}' in agents.json")
 
     # Write .env file
     env_file = Path(__file__).parent / ".env"
@@ -189,11 +237,20 @@ def setup_interactive():
     if backend != "local":
         print(f"  2. Set up automatic sync (crontab):")
         script_path = Path(__file__).parent / "scripts"
-        print(f"     * * * * * cd {data_dir} && python3 {script_path}/sync.py pull")
-        print(f"     */5 * * * * cd {data_dir} && python3 {script_path}/sync.py push")
+        print(f"     */5 * * * * cd {data_dir} && python3 {script_path}/sync.py sync")
 
-    print(f"  {'3' if backend != 'local' else '2'}. Schedule daily memory consolidation:")
+    step = 3 if backend != "local" else 2
+    print(f"  {step}. Schedule daily memory consolidation:")
     print(f"     0 23 * * * python3 {Path(__file__).parent}/scripts/memory_consolidator.py all")
+
+    step += 1
+    print(f"  {step}. (Optional) Set up mailbox watcher for auto-notifications:")
+    print(f"     Option A - Daemon (recommended):")
+    print(f"       python3 {Path(__file__).parent}/scripts/mailbox_watcher.py daemon")
+    print(f"     Option B - Crontab:")
+    print(f"       * * * * * python3 {Path(__file__).parent}/scripts/mailbox_watcher.py oneshot")
+    print(f"     Option C - macOS launchd:")
+    print(f"       See examples/com.memshare.watcher.plist")
 
     print(f"\n  {C.CYAN}Data directory: {data_dir}{C.END}")
     print(f"  {C.CYAN}Agent name: {agent_name}{C.END}")

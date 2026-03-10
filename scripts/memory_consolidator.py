@@ -157,6 +157,7 @@ def promote(data_dir: Path):
             continue
 
         content = filepath.read_text(encoding="utf-8")
+        file_promoted = 0
 
         # Find entries with Recurrence-Count >= 3 and status: active
         pattern = r"(### (?:LRN|ERR)-\d{4}-\d{2}-\d{2}-\d+\n.*?(?=### (?:LRN|ERR)-|\Z))"
@@ -202,20 +203,79 @@ def promote(data_dir: Path):
                         f"**Status**: promoted",
                     )
                     content = content.replace(entry, new_entry)
-                    promoted_count += 1
+                    file_promoted += 1
 
                     logger.info(f"Promoted: {pattern_key} (count={count})")
 
-        # Write back modified content
-        if promoted_count > 0:
+        # Write back modified content only if this file had promotions
+        if file_promoted > 0:
             filepath.write_text(content, encoding="utf-8")
+        promoted_count += file_promoted
 
     logger.info(f"Promotion complete: {promoted_count} entries promoted")
 
 
+def archive_mailbox(data_dir: Path, archive_after_days: int = 30):
+    """
+    Archive processed mailbox messages.
+
+    - Moves status=done messages from inbox root to inbox/archive/
+    - Deletes archived messages older than archive_after_days
+    """
+    mailbox_dir = data_dir / "mailbox"
+    if not mailbox_dir.exists():
+        return
+
+    archived = 0
+    deleted = 0
+    today = datetime.now().date()
+
+    # Process each agent's inbox
+    for inbox in mailbox_dir.iterdir():
+        if not inbox.is_dir() or not inbox.name.startswith("to-"):
+            continue
+
+        archive_dir = inbox / "archive"
+
+        # Step 1: Move status=done messages to archive
+        for msg_file in inbox.glob("*.md"):
+            if msg_file.name == "PROTOCOL.md":
+                continue
+
+            try:
+                content = msg_file.read_text(encoding="utf-8")
+                if "status: done" in content:
+                    archive_dir.mkdir(parents=True, exist_ok=True)
+                    msg_file.rename(archive_dir / msg_file.name)
+                    archived += 1
+            except Exception as e:
+                logger.warning(f"Failed to archive {msg_file}: {e}")
+
+        # Step 2: Delete old archived messages
+        if archive_dir.exists():
+            for old_file in archive_dir.glob("*.md"):
+                try:
+                    # Extract date from filename: YYYYMMDD_HHMMSS_agent.md
+                    date_str = old_file.stem[:8]  # "20260305"
+                    file_date = datetime.strptime(date_str, "%Y%m%d").date()
+                    age = (today - file_date).days
+
+                    if age > archive_after_days:
+                        old_file.unlink()
+                        deleted += 1
+                except (ValueError, IndexError):
+                    continue
+
+    if archived or deleted:
+        logger.info(
+            f"Mailbox cleanup: {archived} messages archived, "
+            f"{deleted} old archives deleted"
+        )
+
+
 def cleanup(data_dir: Path, archive_after_days: int = 90):
     """
-    Archive old daily memories.
+    Archive old daily memories and clean up mailbox.
     Moves files older than archive_after_days to an archive directory.
     """
     daily_dir = data_dir / "daily-memories"
@@ -243,6 +303,16 @@ def cleanup(data_dir: Path, archive_after_days: int = 90):
 
     if archived:
         logger.info(f"Archived {archived} old daily memory files")
+
+    # Also clean up mailbox
+    archive_mailbox(data_dir)
+
+    # Clean up watcher state
+    try:
+        from mailbox_watcher import cleanup_state
+        cleanup_state(data_dir)
+    except ImportError:
+        pass
 
 
 def _extract_section(content: str, section_name: str) -> str:

@@ -1,0 +1,20 @@
+# memShare - AWS S3 / S3-Compatible Configuration
+# Copy this file to your memShare data directory as .env
+
+# Data directory
+MEMSHARE_DATA_DIR=~/memshare-data
+
+# Agent identity
+AGENT_NAME=my-agent
+
+# Storage backend
+MEMSHARE_STORAGE=s3
+
+# AWS S3 credentials
+AWS_ACCESS_KEY_ID=your-access-key-here
+AWS_SECRET_ACCESS_KEY=your-secret-key-here
+S3_BUCKET=your-bucket-name
+S3_REGION=us-east-1
+
+# Optional: S3-compatible endpoint (e.g., MinIO, Cloudflare R2)
+# S3_ENDPOINT_URL=https://your-endpoint.example.com

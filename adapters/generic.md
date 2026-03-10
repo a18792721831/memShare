@@ -75,7 +75,13 @@ graph LR
 
         subgraph mailbox/
             P["PROTOCOL.md"]
-            A["to-agent-a/"]
+            AJ["agents.json"]
+            subgraph to-agent-a/
+                AA["*.md (active)"]
+                subgraph archive/
+                    AR["*.md (done)"]
+                end
+            end
             B["to-agent-b/"]
         end
     end

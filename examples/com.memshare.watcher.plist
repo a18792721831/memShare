@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.memshare.watcher</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/path/to/memShare/scripts/mailbox_watcher.py</string>
+        <string>daemon</string>
+        <string>--interval</string>
+        <string>60</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>MEMSHARE_DATA_DIR</key>
+        <string>~/memshare-data</string>
+        <key>WATCHER_NOTIFY_CHANNELS</key>
+        <string>log,openclaw_wecom,macos</string>
+        <key>OPENCLAW_NOTIFY_TO</key>
+        <string>your-rtx-name</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/memshare-watcher.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/tmp/memshare-watcher.log</string>
+
+    <key>WorkingDirectory</key>
+    <string>/path/to/memShare</string>
+</dict>
+</plist>

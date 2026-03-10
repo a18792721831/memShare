@@ -43,11 +43,12 @@ On every new session, load memories in parallel:
 1. Read `MEMORY.md` + today's and yesterday's `daily-memories/` → 150-word summary
 2. Read `USER.md` → 50-word preference summary
 3. Read `.learnings/ERRORS.md` + `.learnings/LEARNINGS.md` → active items summary
-4. Check `mailbox/to-{agent-name}/` for unread messages
+4. Check `mailbox/to-{agent-name}/` for unread messages (scan inbox root only, NOT archive/)
 
 **Rules:**
 - Internalize summaries as background knowledge, do NOT output to user
 - If inbox has unread messages, report to user
+- Only scan `to-{agent-name}/*.md`, skip `to-{agent-name}/archive/`
 
 ## Memory Writing
 

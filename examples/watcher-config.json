@@ -1,0 +1,22 @@
+{
+  "_comment": "memShare Mailbox Watcher configuration. Place this file anywhere and pass via --config flag.",
+
+  "data_dir": "~/memshare-data",
+  "poll_interval": 60,
+  "agents": null,
+  "notify_channels": ["log", "macos", "openclaw_wecom"],
+  "auto_process_requests": true,
+  "state_cleanup_days": 7,
+
+  "openclaw_wecom": {
+    "_comment": "WeChat Work notification via OpenClaw relay. Watcher writes a request message to OpenClaw's mailbox, and OpenClaw forwards it to the user via its built-in WeChat Work app.",
+    "notify_to": "your-rtx-name"
+  },
+
+  "pigeon": {
+    "_comment": "[DEPRECATED] Fly Pigeon (WeChat Work) notification. Use openclaw_wecom instead.",
+    "api_url": "",
+    "send_to": ["your-rtx-name"],
+    "send_from": "memShare"
+  }
+}
