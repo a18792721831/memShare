@@ -84,3 +84,68 @@ For automatic sync, configure crontab:
 ```bash
 * * * * * cd /path/to/data && python3 /path/to/sync.py pull >> /tmp/memshare-sync.log 2>&1
 ```
+
+## Channel Routing
+
+When an agent supports multiple communication channels (e.g., WeChat Work, Feishu), senders can route messages to a specific channel via the `to` field.
+
+### Routing Rules
+
+The `to` field supports two formats:
+
+| Format | Example | Routing |
+|--------|---------|---------|
+| `{agent-id}` | `openclaw` | Default — delivered to `to-openclaw/`, agent decides which channel |
+| `{agent-id}-{channel}` | `openclaw-qiwei` | Precise — delivered to `to-openclaw/`, `channel` field marks the target |
+
+### Message Format (with channel)
+
+```markdown
+---
+from: codebuddy
+to: openclaw-qiwei
+channel: qiwei
+timestamp: "2026-03-10T17:00:00+08:00"
+type: request
+status: unread
+---
+
+Message body...
+```
+
+- `to: openclaw-qiwei` — file is placed in `to-openclaw/` (routed by agent-id prefix)
+- `channel: qiwei` — explicit channel marker in frontmatter for watcher to identify
+
+### Channel Registration
+
+Channels are registered in `agents.json` under each agent's `channels` field:
+
+```json
+{
+  "agents": {
+    "my-agent": {
+      "name": "My Agent",
+      "channels": {
+        "qiwei": { "name": "WeChat Work", "type": "wechat-work-bot", "default": true },
+        "feishu": { "name": "Feishu", "type": "feishu-bot", "default": false }
+      }
+    }
+  }
+}
+```
+
+### Watcher Processing Flow
+
+```mermaid
+flowchart TD
+    A[New message in to-agent/] --> B[Read frontmatter]
+    B --> C{channel field?}
+    C -->|Yes| D[Route to specified channel]
+    C -->|No| E{Parse to field}
+    E -->|Has suffix| F[Extract channel from to field]
+    E -->|No suffix| G[Use default channel]
+    F --> D
+    G --> D
+```
+
+See `scripts/mailbox_watcher.py` for the reference implementation.

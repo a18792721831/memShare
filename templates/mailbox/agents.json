@@ -1,0 +1,36 @@
+{
+  "agents": {
+    "agent-a": {
+      "name": "Agent A",
+      "type": "coding-assistant",
+      "platform": "IDE Extension",
+      "capabilities": ["code", "file-system", "git"],
+      "mailbox": "to-agent-a",
+      "channels": {},
+      "registered_at": "2026-01-01T00:00:00+00:00",
+      "status": "active"
+    },
+    "agent-b": {
+      "name": "Agent B",
+      "type": "general-assistant",
+      "platform": "Chat Bot",
+      "capabilities": ["web-search", "analysis"],
+      "mailbox": "to-agent-b",
+      "channels": {
+        "qiwei": {
+          "name": "WeChat Work",
+          "type": "wechat-work-bot",
+          "default": true
+        },
+        "feishu": {
+          "name": "Feishu",
+          "type": "feishu-bot",
+          "default": false
+        }
+      },
+      "registered_at": "2026-01-01T00:00:00+00:00",
+      "status": "active"
+    }
+  },
+  "version": 3
+}
